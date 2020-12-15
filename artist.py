@@ -217,7 +217,8 @@ class TheArtist():
 
         return
 
-    def plot_panel_imshow(self, x, y, z, idx_row, idx_col, origin='lower', extent=None, cmap='Reds'):
+
+    def plot_panel_imshow(self, x, y, z, idx_row, idx_col, vmin=0, vmax=1, origin='lower', extent=None, cmap='Reds'):
 
         # self.axs[idx_row, idx_col].imshow(
         #     X=z,
@@ -234,8 +235,8 @@ class TheArtist():
             origin=origin,
             extent=extent,
             cmap=cmap,
-            vmin=0,
-            vmax=z.max()
+            vmin=vmin,
+            vmax=vmax
         )
         )
 
