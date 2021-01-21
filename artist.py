@@ -10,6 +10,7 @@ matplotlib.use('Agg')
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
 from matplotlib.gridspec import GridSpec
 
 
@@ -65,6 +66,10 @@ class TheArtist():
         elif ratio == 'square':
 
             ratio = 1
+
+        elif type(ratio) == float:
+
+            ratio = ratio
         
         else:
 
@@ -123,6 +128,48 @@ class TheArtist():
                 self.axs = np.array(
                     [xi + [None] * (max(map(len, self.axs)) - len(xi)) for xi in self.axs]
                 )
+
+            elif type(rows) == list and len(rows) == cols:
+            
+                fig_width = fig_width_pt * self.inches_per_pt 
+                fig_height = fig_width * max(rows) / cols * ratio
+
+                self.fig = plt.figure(figsize = (fig_width, fig_height), constrained_layout=False)
+
+                gs = GridSpec(max(rows) * 2, cols * 2, figure=self.fig)
+
+                self.axs = []
+                
+                for row, col in zip(rows, range(cols)):
+
+                    axs_row = []
+
+                    if row == max(rows):
+
+                        for idx_row in range(row):
+
+                            axs_row.append(
+                                    self.fig.add_subplot(gs[2*idx_row:2*(idx_row + 1), 2*col:2*(col + 1)])
+                                )
+
+                    else:
+
+                        start = max(rows) - row
+
+                        for idx_row in range(row):
+
+                            axs_row.append(
+                                self.fig.add_subplot(gs[(start + 2*idx_row):(start + 2*(idx_row + 1)), 2*col:2*(col + 1)])
+                            )
+
+                    self.axs.append(
+                        axs_row
+                    )
+                        
+                
+                self.axs = np.array(
+                    [xi + [None] * (max(map(len, self.axs)) - len(xi)) for xi in self.axs]
+                ).T
 
         
         self.im = []
@@ -197,26 +244,72 @@ class TheArtist():
         )
 
 
-    def plot_panel_imshow(self, x, y, z, idx_row, idx_col, origin='lower', extent=None, cmap='Reds'):
+    def plot_scatter(self, x, y, idx_row, idx_col, marker='s', edgecolor=None, facecolor=None, linewidths=3, markersize=4,zorder=1):
 
-        # self.axs[idx_row, idx_col].imshow(
-        #     X=z,
-        #     origin=origin,
-        #     extent=None,
-        #     cmap=cmap,
-        #     vmin=0,
-        #     vmax=z.max()
-        # )
+        self.axs[idx_row, idx_col].scatter(
+            x,
+            y,
+            marker=marker,
+            s=markersize,
+            edgecolor=edgecolor,
+            facecolor=facecolor,
+            linewidths=linewidths,
+            zorder=zorder
+        )
+
+        return
+
+
+    def plot_panel_imshow(self, z, idx_row, idx_col, vmin=0, vmax=1, origin='lower', extent=None, cmap='Reds'):
 
         self.im.append(
             self.axs[idx_row, idx_col].imshow(
             X=z,
             origin=origin,
-            extent=None,
+            extent=extent,
             cmap=cmap,
-            vmin=0,
-            vmax=z.max()
+            vmin=vmin,
+            vmax=vmax
         )
+        )
+
+        return
+
+    
+    def plot_panel_contourf(self, x, y, z, idx_row, idx_col, cmap='Reds', clims=[-1,1], levels=10, extend='both', norm=matplotlib.colors.Normalize(vmin=-1, vmax=1)):
+        
+        self.im.append(
+            self.axs[idx_row, idx_col].contourf(
+                x,
+                y,
+                z,
+                levels=levels,
+                cmap=cmap,
+                vmin=clims[0],
+                vmax=clims[1],
+                extend=extend,
+                norm=norm
+            )
+        )
+
+        return
+
+
+    def plot_panel_contour(self, x, y, z, idx_row, idx_col, colors=None, cmap='Reds', clims=[-1,1], levels=10, extend='both', linewidths=1):
+        
+        self.im.append(
+            self.axs[idx_row, idx_col].contour(
+                x,
+                y,
+                z,
+                levels=levels,
+                colors=colors,
+                cmap=cmap,
+                linewidths=linewidths
+                # vmin=clims[0],
+                # vmax=clims[1],
+                # extend=extend
+            )
         )
 
         return
@@ -247,12 +340,53 @@ class TheArtist():
             markerfacecolor=markerfacecolor
         )
 
-    
+
+    def plot_lines_semi_x(self, x, y, idx_row, idx_col, color='darkblue', linewidth=1, linestyle='-', marker=None, markeredgecolor=None, markerfacecolor=None, markersize=2):
+
+        self.axs[idx_row, idx_col].semilogx(
+            x,
+            y,
+            color=color,
+            linestyle=linestyle,
+            linewidth=linewidth,
+            marker=marker,
+            markeredgecolor=markeredgecolor,
+            markerfacecolor=markerfacecolor,
+            markersize=3
+        )
+
+        return
+
+
+    def plot_errorbar(self, x, y, yerr, idx_row, idx_col, color='darkblue', zorder=1, capsize=3, linestyle='-'):
+
+        self.axs[idx_row, idx_col].errorbar(
+            x,
+            y,
+            yerr,
+            linestyle=linestyle,
+            color=color,
+            zorder=zorder,
+            capsize=capsize
+        )
+
+        return
+
+
+    def plot_patch(self, polygon, idx_row, idx_col, alpha=0.3, edgecolor=None, facecolor='coral'):
+
+        poly = Polygon(polygon, alpha=alpha, edgecolor=edgecolor, facecolor=facecolor)
+
+        self.axs[idx_row, idx_col].add_patch(poly)
+
+        return
+
+
     def save_figure(self, fig_name, fig_format='png', dots_per_inch=600):
 
         filename = f'{fig_name}.{fig_format}'
 
-        self.fig.tight_layout()
+        # self.fig.tight_layout()
 
         self.fig.savefig(filename, dpi=dots_per_inch, bbox_inches='tight')
 
@@ -267,9 +401,16 @@ class TheArtist():
         return
 
 
-    def set_colorbar(self, idx_row, idx_col, title=False):
+    def set_colorbar(self, idx_fig, idx_row, idx_col, title=False, orientation='vertical', fraction=0.05, ticks=[-1, 0, 1], vmin=-1, vmax=1):
 
-        cbar = self.fig.colorbar(self.im[0], ax=self.axs[idx_row, idx_col], fraction=0.04)
+        cbar = self.fig.colorbar(
+            self.im[idx_fig], 
+            ax=self.axs, 
+            fraction=fraction, 
+            orientation=orientation, 
+            ticks=ticks,
+            extendfrac=0
+        )
 
         if title:
 
@@ -278,28 +419,28 @@ class TheArtist():
         return
 
 
-    def set_labels(self, labels, idx_row, idx_col):
+    def set_labels(self, labels, idx_row, idx_col, labelpad=[None, None]):
 
-        self.axs[idx_row, idx_col].set_xlabel(labels[0])
-        self.axs[idx_row, idx_col].set_ylabel(labels[1])
+        self.axs[idx_row, idx_col].set_xlabel(labels[0], labelpad=labelpad[0])
+        self.axs[idx_row, idx_col].set_ylabel(labels[1], labelpad=labelpad[1])
 
         return
 
 
     def set_ticks(self, ticks, idx_row, idx_col):
 
-        if list(ticks[0]) != None:
+        if ticks[0] != None:
         
             self.axs[idx_row, idx_col].set_xticks(ticks[0])
 
-        if list(ticks[1]) != None:
+        if ticks[1] != None:
 
             self.axs[idx_row, idx_col].set_yticks(ticks[1])
 
         return
 
 
-    def set_ticklabels(self, labels, idx_row, idx_col, position=[True, False, True, False], rotation=[0, 0], alignment_h=["center", "center"], alignment_v=["center", "center"], rotation_mode=[None, None]):
+    def set_ticklabels(self, labels, idx_row, idx_col, position=[False, True, False, True], rotation=[0, 0], alignment_h=["center", "center"], alignment_v=["center", "center"], rotation_mode=[None, None]):
 
         if labels[0] != None:
         
@@ -331,3 +472,17 @@ class TheArtist():
         return
 
 
+    def set_adjust(self, left=None, bottom=None, right=None, top=None, wspace=None, hspace=None):
+
+        # plt.subplots_adjust(top=0.6)
+
+        self.fig.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace)
+
+        return
+
+
+    def set_tick_params(self, idx_row, idx_col, axis="both", direction="in", which="both", pad=4, bottom=True, top=False, left=True, right=False, labelbottom=True, labelleft=True, length=4):
+        
+        self.axs[idx_row,idx_col].tick_params(axis=axis, direction=direction, pad=pad, which=which, bottom=bottom, top=top, labelbottom=labelbottom, left=left, right=right, labelleft=labelleft, length=length)
+
+        return
