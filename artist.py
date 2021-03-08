@@ -22,6 +22,7 @@ class TheArtist():
         self.inches_per_pt = 1.0 / 72.27   
         plt.rc('text', usetex=latex)
         plt.rc('font', family=font, size=fontsize)
+        plt.rc('axes', titlesize=fontsize)
 
         return
 
@@ -295,7 +296,7 @@ class TheArtist():
         return
 
 
-    def plot_panel_contour(self, x, y, z, idx_row, idx_col, colors=None, cmap='Reds', clims=[-1,1], levels=10, extend='both', linewidths=1):
+    def plot_panel_contour(self, x, y, z, idx_row, idx_col, colors=None, cmap='Reds', clims=[-1,1], levels=10, extend='both', linewidths=1, linestyles='-'):
         
         self.im.append(
             self.axs[idx_row, idx_col].contour(
@@ -305,7 +306,8 @@ class TheArtist():
                 levels=levels,
                 colors=colors,
                 cmap=cmap,
-                linewidths=linewidths
+                linewidths=linewidths,
+                linestyles=linestyles
                 # vmin=clims[0],
                 # vmax=clims[1],
                 # extend=extend
@@ -419,10 +421,18 @@ class TheArtist():
         return
 
 
-    def set_labels(self, labels, idx_row, idx_col, labelpad=[None, None]):
+    def set_labels(self, labels, idx_row, idx_col, labelpad=[None, None], flip = [False, False]):
 
         self.axs[idx_row, idx_col].set_xlabel(labels[0], labelpad=labelpad[0])
         self.axs[idx_row, idx_col].set_ylabel(labels[1], labelpad=labelpad[1])
+
+        if flip[0]:
+
+            self.axs[idx_row, idx_col].xaxis.set_label_position("top")
+
+        if flip[1]:
+
+            self.axs[idx_row, idx_col].yaxis.set_label_position("right")
 
         return
 
@@ -486,3 +496,9 @@ class TheArtist():
         self.axs[idx_row,idx_col].tick_params(axis=axis, direction=direction, pad=pad, which=which, bottom=bottom, top=top, labelbottom=labelbottom, left=left, right=right, labelleft=labelleft, length=length)
 
         return
+
+
+    def set_scale_format(self, idx_row, idx_col, format_scale):
+
+        self.axs[idx_row, idx_col].set_xscale(format_scale[0]) 
+        self.axs[idx_row, idx_col].set_yscale(format_scale[1]) 
