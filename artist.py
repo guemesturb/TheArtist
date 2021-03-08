@@ -139,7 +139,7 @@ class TheArtist():
         
         sns.distplot(
             data, 
-            hist=True, 
+            hist=False, 
             kde=True, 
             bins=bins, 
             color=color, 
@@ -348,6 +348,16 @@ class TheArtist():
         return
 
 
+    def plot_bar_horizontal(self, x, y, idx_row, idx_col, color='lightcoral', edgecolor='k'):
+
+        self.axs[idx_row, idx_col].barh(
+            y=x,
+            width=y,
+            color=color, 
+            edgecolor=edgecolor
+        )
+
+
     def save_figure(self, fig_name, fig_format='png', dots_per_inch=600):
 
         filename = f'{fig_name}.{fig_format}'
@@ -445,6 +455,7 @@ class TheArtist():
         self.fig.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace)
 
         return
+
 
     def set_tick_params(self, idx_row, idx_col, axis="both", direction="in", which="both", pad=4):
         
