@@ -22,6 +22,7 @@ class TheArtist():
         self.inches_per_pt = 1.0 / 72.27   
         plt.rc('text', usetex=latex)
         plt.rc('font', family=font, size=fontsize)
+        plt.rc('axes', titlesize=fontsize)
 
         return
 
@@ -129,6 +130,48 @@ class TheArtist():
                     [xi + [None] * (max(map(len, self.axs)) - len(xi)) for xi in self.axs]
                 )
 
+            elif type(rows) == list and len(rows) == cols:
+            
+                fig_width = fig_width_pt * self.inches_per_pt 
+                fig_height = fig_width * max(rows) / cols * ratio
+
+                self.fig = plt.figure(figsize = (fig_width, fig_height), constrained_layout=False)
+
+                gs = GridSpec(max(rows) * 2, cols * 2, figure=self.fig)
+
+                self.axs = []
+                
+                for row, col in zip(rows, range(cols)):
+
+                    axs_row = []
+
+                    if row == max(rows):
+
+                        for idx_row in range(row):
+
+                            axs_row.append(
+                                    self.fig.add_subplot(gs[2*idx_row:2*(idx_row + 1), 2*col:2*(col + 1)])
+                                )
+
+                    else:
+
+                        start = max(rows) - row
+
+                        for idx_row in range(row):
+
+                            axs_row.append(
+                                self.fig.add_subplot(gs[(start + 2*idx_row):(start + 2*(idx_row + 1)), 2*col:2*(col + 1)])
+                            )
+
+                    self.axs.append(
+                        axs_row
+                    )
+                        
+                
+                self.axs = np.array(
+                    [xi + [None] * (max(map(len, self.axs)) - len(xi)) for xi in self.axs]
+                ).T
+
         
         self.im = []
 
@@ -139,7 +182,7 @@ class TheArtist():
         
         sns.distplot(
             data, 
-            hist=True, 
+            hist=False, 
             kde=True, 
             bins=bins, 
             color=color, 
@@ -217,16 +260,8 @@ class TheArtist():
 
         return
 
-    def plot_panel_imshow(self, x, y, z, idx_row, idx_col, origin='lower', extent=None, cmap='Reds'):
 
-        # self.axs[idx_row, idx_col].imshow(
-        #     X=z,
-        #     origin=origin,
-        #     extent=None,
-        #     cmap=cmap,
-        #     vmin=0,
-        #     vmax=z.max()
-        # )
+    def plot_panel_imshow(self, z, idx_row, idx_col, vmin=0, vmax=1, origin='lower', extent=None, cmap='Reds'):
 
         self.im.append(
             self.axs[idx_row, idx_col].imshow(
@@ -234,15 +269,15 @@ class TheArtist():
             origin=origin,
             extent=extent,
             cmap=cmap,
-            vmin=0,
-            vmax=z.max()
+            vmin=vmin,
+            vmax=vmax
         )
         )
 
         return
 
     
-    def plot_panel_contourf(self, x, y, z, idx_row, idx_col, cmap='Reds', clims=[-1,1], levels=10, extend='both'):
+    def plot_panel_contourf(self, x, y, z, idx_row, idx_col, cmap='Reds', clims=[-1,1], levels=10, extend='both', norm=matplotlib.colors.Normalize(vmin=-1, vmax=1)):
         
         self.im.append(
             self.axs[idx_row, idx_col].contourf(
@@ -253,14 +288,15 @@ class TheArtist():
                 cmap=cmap,
                 vmin=clims[0],
                 vmax=clims[1],
-                extend=extend
+                extend=extend,
+                norm=norm
             )
         )
 
         return
 
 
-    def plot_panel_contour(self, x, y, z, idx_row, idx_col, colors=None, cmap='Reds', clims=[-1,1], levels=10, extend='both', linewidths=1):
+    def plot_panel_contour(self, x, y, z, idx_row, idx_col, colors=None, cmap='Reds', clims=[-1,1], levels=10, extend='both', linewidths=1, linestyles='-'):
         
         self.im.append(
             self.axs[idx_row, idx_col].contour(
@@ -270,7 +306,8 @@ class TheArtist():
                 levels=levels,
                 colors=colors,
                 cmap=cmap,
-                linewidths=linewidths
+                linewidths=linewidths,
+                linestyles=linestyles
                 # vmin=clims[0],
                 # vmax=clims[1],
                 # extend=extend
@@ -347,6 +384,16 @@ class TheArtist():
         return
 
 
+    def plot_bar_horizontal(self, x, y, idx_row, idx_col, color='lightcoral', edgecolor='k'):
+
+        self.axs[idx_row, idx_col].barh(
+            y=x,
+            width=y,
+            color=color, 
+            edgecolor=edgecolor
+        )
+
+
     def save_figure(self, fig_name, fig_format='png', dots_per_inch=600):
 
         filename = f'{fig_name}.{fig_format}'
@@ -366,11 +413,11 @@ class TheArtist():
         return
 
 
-    def set_colorbar(self, idx_fig, idx_row, idx_col, title=False, orientation='vertical', fraction=0.05, ticks=[-1, 0, 1]):
+    def set_colorbar(self, idx_fig, idx_row, idx_col, title=False, orientation='vertical', fraction=0.05, ticks=[-1, 0, 1], vmin=-1, vmax=1):
 
         cbar = self.fig.colorbar(
             self.im[idx_fig], 
-            ax=self.axs[idx_row, idx_col], 
+            ax=self.axs, 
             fraction=fraction, 
             orientation=orientation, 
             ticks=ticks,
@@ -384,10 +431,18 @@ class TheArtist():
         return
 
 
-    def set_labels(self, labels, idx_row, idx_col, labelpad=[None, None]):
+    def set_labels(self, labels, idx_row, idx_col, labelpad=[None, None], flip = [False, False]):
 
         self.axs[idx_row, idx_col].set_xlabel(labels[0], labelpad=labelpad[0])
         self.axs[idx_row, idx_col].set_ylabel(labels[1], labelpad=labelpad[1])
+
+        if flip[0]:
+
+            self.axs[idx_row, idx_col].xaxis.set_label_position("top")
+
+        if flip[1]:
+
+            self.axs[idx_row, idx_col].yaxis.set_label_position("right")
 
         return
 
@@ -405,7 +460,7 @@ class TheArtist():
         return
 
 
-    def set_ticklabels(self, labels, idx_row, idx_col, position=[False, True, True, False], rotation=[0, 0], alignment_h=["center", "center"], alignment_v=["center", "center"], rotation_mode=[None, None]):
+    def set_ticklabels(self, labels, idx_row, idx_col, position=[False, True, False, True], rotation=[0, 0], alignment_h=["center", "center"], alignment_v=["center", "center"], rotation_mode=[None, None]):
 
         if labels[0] != None:
         
@@ -445,8 +500,15 @@ class TheArtist():
 
         return
 
-    def set_tick_params(self, idx_row, idx_col, axis="both", direction="in", which="both", pad=4):
+
+    def set_tick_params(self, idx_row, idx_col, axis="both", direction="in", which="both", pad=4, bottom=True, top=False, left=True, right=False, labelbottom=True, labelleft=True, length=4):
         
-        self.axs[idx_row,idx_col].tick_params(axis=axis, direction=direction, pad=pad, which=which)
+        self.axs[idx_row,idx_col].tick_params(axis=axis, direction=direction, pad=pad, which=which, bottom=bottom, top=top, labelbottom=labelbottom, left=left, right=right, labelleft=labelleft, length=length)
 
         return
+
+
+    def set_scale_format(self, idx_row, idx_col, format_scale):
+
+        self.axs[idx_row, idx_col].set_xscale(format_scale[0]) 
+        self.axs[idx_row, idx_col].set_yscale(format_scale[1]) 
