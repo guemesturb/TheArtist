@@ -178,12 +178,12 @@ class TheArtist():
         return
 
     
-    def plot_probability_density_function(self, data, bins, idx_row, idx_col, color='darkblue', edgecolor='black', linewidth=1):
+    def plot_probability_density_function(self, data, bins, idx_row, idx_col, color='darkblue', edgecolor='black', linewidth=1, hist=False, kde=True):
         
         sns.distplot(
             data, 
-            hist=False, 
-            kde=True, 
+            hist=hist, 
+            kde=kde, 
             bins=bins, 
             color=color, 
             hist_kws={'edgecolor': edgecolor},
@@ -317,7 +317,7 @@ class TheArtist():
         return
 
 
-    def plot_hist(self, x, bins, idx_row, idx_col, color='darkblue', histtype='bar', density=False, weights=None):
+    def plot_hist(self, x, bins, idx_row, idx_col, color='darkblue', edgecolor=None, histtype='bar', density=False, weights=None, stacked=False):
 
         self.axs[idx_row, idx_col].hist(
             x=x,
@@ -325,7 +325,9 @@ class TheArtist():
             color=color,
             histtype=histtype,
             density=density,
-            weights=weights
+            weights=weights,
+            stacked=stacked,
+            edgecolor=edgecolor
         )
 
 
@@ -417,7 +419,7 @@ class TheArtist():
 
         cbar = self.fig.colorbar(
             self.im[idx_fig], 
-            ax=self.axs, 
+            ax=self.axs[idx_row, idx_col], 
             fraction=fraction, 
             orientation=orientation, 
             ticks=ticks,
