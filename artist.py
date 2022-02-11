@@ -230,7 +230,7 @@ class TheArtist():
         return
 
 
-    def plot_lines(self, x, y, idx_row, idx_col, color='darkblue', linewidth=1, linestyle='-', marker=None, markeredgecolor=None, markerfacecolor=None, markersize=3):
+    def plot_lines(self, x, y, idx_row, idx_col, color='darkblue', linewidth=1, linestyle='-', marker=None, markeredgecolor=None, markerfacecolor=None, markersize=3, legend=None):
 
         self.axs[idx_row, idx_col].plot(
             x,
@@ -241,7 +241,8 @@ class TheArtist():
             marker=marker,
             markeredgecolor=markeredgecolor,
             markerfacecolor=markerfacecolor,
-            markersize=markersize
+            markersize=markersize,
+            label=legend
         )
 
 
@@ -356,7 +357,7 @@ class TheArtist():
             marker=marker,
             markeredgecolor=markeredgecolor,
             markerfacecolor=markerfacecolor,
-            markersize=3
+            markersize=markersize
         )
 
         return
