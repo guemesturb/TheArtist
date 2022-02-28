@@ -14,13 +14,13 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 # This call to setup() does all the work
 setup(
     name="TheArtist",
-    version="0.1.0",
+    version="1.0.0",
     description="Plotting class preferences of guemesturb",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/guemesturb/TheArtist",
-    author="Alejandro Güemes",
-    author_email="example@email.com",
+    author="Alejandro G\"uemes",
+    author_email="guemes.turb@gmail.com",
     license="MIT",
     packages=["TheArtist"],
     package_dir= {"TheArtist":"src"},
