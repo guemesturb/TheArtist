@@ -18,14 +18,19 @@ figure.set_labels(['Eje 1', 'Eje V'], 0, 0)
 figure.set_labels(['Eje 2', None], 0, 1)
 figure.savefig("test", fig_format='pdf', dots_per_inch=1000)
 ````
+It is possible to acces the Matplotlib figure accesing its property and apply other functions or methods:
+```python
+figure.fig.savefig("test.png") # savefig method from Matplotlib figure
+```
 More examples can be found in the examples directory. 
 # Installing TheArtist
-Future versions may be uploaded to PyPi. At the moment, to install the current version, you may use the code below.
+You can install it using PyPi: 
+```
+pip install TheArtist
+```
+It is possible to install it from source using the code below:
 ```shell
-pip install wheel
 git clone https://github.com/guemesturb/TheArtist/tree/develop 
 cd TheArtist
-python3 setup.py sdist bdist_wheel
-conda activate your_env
 pip install .
 ```

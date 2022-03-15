@@ -204,6 +204,8 @@ class TheArtist:
         markerfacecolor=None,
         markersize=3,
         legend=None,
+        **kwargs
+    
     ):
 
         """Plot a line plot
@@ -227,6 +229,7 @@ class TheArtist:
             markerfacecolor=markerfacecolor,
             markersize=markersize,
             label=legend,
+            **kwargs
         )
 
     def scatter(
@@ -241,6 +244,7 @@ class TheArtist:
         linewidths=3,
         markersize=4,
         zorder=1,
+        **kwargs
     ):
         """Plot a scatter plot
         Parameters
@@ -262,6 +266,7 @@ class TheArtist:
             facecolor=facecolor,
             linewidths=linewidths,
             zorder=zorder,
+            **kwargs
         )
 
         return
@@ -337,6 +342,7 @@ class TheArtist:
         linewidth=1,
         hist=False,
         kde=True,
+        **kwargs
     ):
 
         sns.distplot(
@@ -348,6 +354,7 @@ class TheArtist:
             hist_kws={"edgecolor": edgecolor},
             kde_kws={"linewidth": linewidth, "bw": (bins[1] - bins[0]) / 2},
             ax=self.axs[idx_row, idx_col],
+            **kwargs
         )
 
         return
@@ -361,6 +368,7 @@ class TheArtist:
         color="darkblue",
         edgecolor="black",
         linewidth=1,
+        **kwargs
     ):
 
         sns.distplot(
@@ -375,6 +383,7 @@ class TheArtist:
                 "cumulative": True,
             },
             ax=self.axs[idx_row, idx_col],
+            **kwargs
         )
 
         return
@@ -390,6 +399,7 @@ class TheArtist:
         color="darkblue",
         edgecolor="black",
         linewidth=1,
+        **kwargs
     ):
 
         jointProbs, xedges, yedges = np.histogram2d(
@@ -407,6 +417,7 @@ class TheArtist:
             levels=levels,
             colors=color,
             linewidths=linewidth,
+            **kwargs
         )
 
         return
@@ -421,11 +432,12 @@ class TheArtist:
         origin="lower",
         extent=None,
         cmap="Reds",
+        **kwargs
     ):
 
         self.im.append(
             self.axs[idx_row, idx_col].imshow(
-                X=z, origin=origin, extent=extent, cmap=cmap, vmin=vmin, vmax=vmax
+                X=z, origin=origin, extent=extent, cmap=cmap, vmin=vmin, vmax=vmax,**kwargs
             )
         )
 
@@ -443,6 +455,7 @@ class TheArtist:
         levels=10,
         extend="both",
         norm=matplotlib.colors.Normalize(vmin=-1, vmax=1),
+        **kwargs
     ):
 
         self.im.append(
@@ -456,6 +469,7 @@ class TheArtist:
                 vmax=clims[1],
                 extend=extend,
                 norm=norm,
+                **kwargs
             )
         )
 
@@ -475,6 +489,7 @@ class TheArtist:
         extend="both",
         linewidths=1,
         linestyles="-",
+        **kwargs
     ):
 
         self.im.append(
@@ -486,7 +501,8 @@ class TheArtist:
                 colors=colors,
                 cmap=cmap,
                 linewidths=linewidths,
-                linestyles=linestyles
+                linestyles=linestyles,
+                **kwargs
                 # vmin=clims[0],
                 # vmax=clims[1],
                 # extend=extend
@@ -507,6 +523,7 @@ class TheArtist:
         density=False,
         weights=None,
         stacked=False,
+        **kwargs
     ):
 
         self.axs[idx_row, idx_col].hist(
@@ -518,6 +535,7 @@ class TheArtist:
             weights=weights,
             stacked=stacked,
             edgecolor=edgecolor,
+            **kwargs
         )
 
     def plot_lines_semi_y(
@@ -532,6 +550,7 @@ class TheArtist:
         marker=None,
         markeredgecolor=None,
         markerfacecolor=None,
+        **kwargs
     ):
 
         self.axs[idx_row, idx_col].semilogy(
@@ -543,6 +562,7 @@ class TheArtist:
             marker=marker,
             markeredgecolor=markeredgecolor,
             markerfacecolor=markerfacecolor,
+            **kwargs
         )
 
     def plot_lines_semi_x(
@@ -558,6 +578,7 @@ class TheArtist:
         markeredgecolor=None,
         markerfacecolor=None,
         markersize=2,
+        **kwargs
     ):
 
         self.axs[idx_row, idx_col].semilogx(
@@ -570,6 +591,8 @@ class TheArtist:
             markeredgecolor=markeredgecolor,
             markerfacecolor=markerfacecolor,
             markersize=markersize,
+            **kwargs
+
         )
 
         return
@@ -585,31 +608,32 @@ class TheArtist:
         zorder=1,
         capsize=3,
         linestyle="-",
+        **kwargs
     ):
 
         self.axs[idx_row, idx_col].errorbar(
-            x, y, yerr, linestyle=linestyle, color=color, zorder=zorder, capsize=capsize
+            x, y, yerr, linestyle=linestyle, color=color, zorder=zorder, capsize=capsize,**kwargs
         )
 
         return
 
     def plot_patch(
-        self, polygon, idx_row, idx_col, alpha=0.3, edgecolor=None, facecolor="coral"
+        self, polygon, idx_row, idx_col, alpha=0.3, edgecolor=None, facecolor="coral",**kwargs
     ):
 
-        poly = Polygon(polygon, alpha=alpha, edgecolor=edgecolor, facecolor=facecolor)
+        poly = Polygon(polygon, alpha=alpha, edgecolor=edgecolor, facecolor=facecolor,**kwargs)
 
         self.axs[idx_row, idx_col].add_patch(poly)
 
         return
 
     def plot_bar_horizontal(
-        self, x, y, idx_row, idx_col, color="lightcoral", edgecolor="k"
+        self, x, y, idx_row, idx_col, color="lightcoral", edgecolor="k",**kwargs
     ):
 
-        self.axs[idx_row, idx_col].barh(y=x, width=y, color=color, edgecolor=edgecolor)
+        self.axs[idx_row, idx_col].barh(y=x, width=y, color=color, edgecolor=edgecolor,**kwargs)
 
-    def savefig(self, fname, fig_format="png", dots_per_inch=600):
+    def savefig(self, fname, fig_format="png", dots_per_inch=600,**kwargs):
         """
         Saves the plot to a figure
         
@@ -618,7 +642,7 @@ class TheArtist:
 
         # self.fig.tight_layout()
 
-        self.fig.savefig(fname, dpi=dots_per_inch, bbox_inches="tight")
+        self.fig.savefig(fname, dpi=dots_per_inch, bbox_inches="tight",**kwargs)
 
         return
 
@@ -640,7 +664,7 @@ class TheArtist:
         ticks=[-1, 0, 1],
         vmin=-1,
         vmax=1,
-    ):
+    ): 
 
         cbar = self.fig.colorbar(
             self.im[idx_fig],
@@ -649,6 +673,7 @@ class TheArtist:
             orientation=orientation,
             ticks=ticks,
             extendfrac=0,
+            **kwargs
         )
 
         if title:
@@ -696,6 +721,7 @@ class TheArtist:
         alignment_h=["center", "center"],
         alignment_v=["center", "center"],
         rotation_mode=[None, None],
+        **kwargs
     ):
 
         if labels[0] != None:
@@ -706,6 +732,7 @@ class TheArtist:
                 ha=alignment_h[0],
                 va=alignment_v[0],
                 rotation_mode=rotation_mode[0],
+                **kwargs
             )
 
         if labels[1] != None:
@@ -716,6 +743,7 @@ class TheArtist:
                 ha=alignment_h[1],
                 va=alignment_v[1],
                 rotation_mode=rotation_mode[1],
+                **kwargs
             )
 
         self.axs[idx_row, idx_col].tick_params(
@@ -723,6 +751,7 @@ class TheArtist:
             bottom=position[1],
             labeltop=position[2],
             labelbottom=position[3],
+            **kwargs
         )
 
         # plt.setp(cezanne.axs[0,0].get_xticklabels(), rotation=-30, ha="right", rotation_mode="anchor")
@@ -770,6 +799,7 @@ class TheArtist:
         labelbottom=True,
         labelleft=True,
         length=4,
+        **kwargs
     ):
 
         self.axs[idx_row, idx_col].tick_params(
@@ -784,6 +814,7 @@ class TheArtist:
             right=right,
             labelleft=labelleft,
             length=length,
+            **kwargs
         )
 
         return
